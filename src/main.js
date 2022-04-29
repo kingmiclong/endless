@@ -22,4 +22,5 @@ let game = new Phaser.Game(config);
 let cursors;
 let gamePointer;
 let enemySpeed;
+let score;
 let centerX = game.config.width/2;

@@ -14,6 +14,7 @@ class Play extends Phaser.Scene {
         this.ONE_SEC = 60;
         this.emenyHPLoss = 30;
         enemySpeed = -2.5;
+        score = 0;
 
         //CREATE bug/obstacle/ghost ANIMATIONS
         this.anims.create({
@@ -80,6 +81,24 @@ class Play extends Phaser.Scene {
         this.player.setCollideWorldBounds(true);  
         this.physics.add.collider(this.player, this.blocker);
 
+
+        // Score
+        let scoreConfig = {
+            fontFamily: 'Courier',
+            fontSize: '28px',
+            //backgroundColor: '#F3B141',
+            color: '#ffffff',
+            align: 'left',
+            padding: {
+                top: 5,
+                bottom: 5,
+            },
+            fixedWidth: 100
+        }
+
+        this.scoreText = this.add.text(20, 20, score, scoreConfig);
+
+
         // move player to the clicked/tapped position AND PLAY DIRECTIONAL ANIMATION
         this.input.on('pointerdown', function (gamePointer)
         {
@@ -129,12 +148,25 @@ class Play extends Phaser.Scene {
         this.time.delayedCall(2500 * 5, () => { 
             this.addEnemy(); 
         });
+
+        // set up difficulty timer (triggers callback every second)
+        this.scoreTimer = this.time.addEvent({
+            delay: 1000,
+            callback: this.addScore,
+            callbackScope: this,
+            loop: true
+        });
     }
 
     addEnemy() {
         let enemy = new Obstacle(this, enemySpeed, 'ghost');
         enemy.play("ghostWalk");
         this.obstacleGroup.add(enemy);
+    }
+
+    addScore() {
+        score += 100;
+        this.scoreText.text = score;
     }
 
     update() {
@@ -189,7 +221,6 @@ class Play extends Phaser.Scene {
             if(obstacle.isHit == false){  
                 //if statement added since obstacleHit is called in all the different frames where player and obstacle are overlapping
                 //if statement allows code below to only happen once (the first time collision happens between player and member of obstacleGroup)
-                console.log("collide"); //debugging console log
                 obstacle.isHit = true; // obstacle animation plays that shows it got hit by player (breaks/gets damaged)
                 this.hp.decrease(this.emenyHPLoss);         //Decrements HP
                 //insert code to play animation for character to make it appear hurt (can also just be changing the tint of the sprite.)
