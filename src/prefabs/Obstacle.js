@@ -17,6 +17,7 @@ class Obstacle extends Phaser.Physics.Arcade.Sprite {
         if (this.isHit && this.alpha > 0) {
             this.alpha -= 0.05;
             this.setAlpha(this.alpha);
+            
         }
 
 

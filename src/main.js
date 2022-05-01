@@ -14,11 +14,12 @@ let config = {
             }
         }
     },
-    scene: [Load, Menu, Instructions, Play]
+    scene: [Load, Menu, Instructions, Play, Death]
 }
 
 let game = new Phaser.Game(config);
-
+//let pause is true
+let pause = false ;
 let cursors;
 let gamePointer;
 let enemySpeed;

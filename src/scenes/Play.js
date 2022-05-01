@@ -2,7 +2,7 @@ class Play extends Phaser.Scene {
     constructor() {
         super("playScene");
     }
-
+     
     create() {
         // a vector to track player's position
         this.ptr = new Phaser.Math.Vector2();
@@ -15,6 +15,16 @@ class Play extends Phaser.Scene {
         this.emenyHPLoss = 30;
         enemySpeed = -2.5;
         score = 0;
+
+        this.bg_music = this.sound.add('bg_music', {
+            mute: false,
+            volume: 0.5,
+            rate: 1.2,
+            loop: true 
+        });
+
+        this.bg_music.play();
+
 
         //CREATE bug/obstacle/ghost ANIMATIONS
         this.anims.create({
@@ -44,9 +54,8 @@ class Play extends Phaser.Scene {
         this.add.image(0, game.config.height * (2/3), 'botUI').setOrigin(0);
 
         // Variable for cursor
-        gamePointer = this.input.activePointer;
+        gamePointer = this.input.activePointer;        
         
-        //create player animate
         this.anims.create({
             key: 'right',            
             frames: this.anims.generateFrameNumbers('miku', {start: 6, end: 8, first: 6}),
@@ -60,13 +69,15 @@ class Play extends Phaser.Scene {
             repeat: -1
         });
         this.anims.create({
-            key: 'down',            
+            key: 'down',          
             frames: this.anims.generateFrameNumbers('miku', {start: 3, end: 5, first: 3}),
             frameRate: 4,
             repeat: -1
         });
         this.anims.create({
+
             key: 'up',            
+
             frames: this.anims.generateFrameNumbers('miku', {start: 9, end: 11, first: 9}),
             frameRate: 4,
             repeat: -1
@@ -93,10 +104,9 @@ class Play extends Phaser.Scene {
                 top: 5,
                 bottom: 5,
             },
-            fixedWidth: 100
         }
 
-        this.scoreText = this.add.text(20, 20, score, scoreConfig);
+        this.scoreText = this.add.text(20, 20, "0:00", scoreConfig);
 
 
         // move player to the clicked/tapped position AND PLAY DIRECTIONAL ANIMATION
@@ -108,11 +118,14 @@ class Play extends Phaser.Scene {
             this.ptr.y=gamePointer.y;
             let xdifference = (Math.abs((Math.abs(this.player.x)) - (Math.abs(this.ptr.x))));
             let ydifference = (Math.abs((Math.abs(this.player.y)) - (Math.abs(this.ptr.y))));
-            if(xdifference > ydifference){  //if player is moving more horizontal than vertical
+            if(xdifference > ydifference){  
+                this.sound.play('walk3');
+                //if player is moving more horizontal than vertical
                 if(this.player.x<this.ptr.x){this.player.play('right');}
                 else{this.player.play('left');}
             }
             if(ydifference > xdifference){  //if player is moving more vertical than horizontal
+                this.sound.play('walk3');
                 if(this.player.y<this.ptr.y){this.player.play('down');}
                 else{this.player.play('up');}
             }
@@ -165,11 +178,16 @@ class Play extends Phaser.Scene {
     }
 
     addScore() {
-        score += 100;
-        this.scoreText.text = score;
+        score += 1;
+        if (score < 10) {
+            this.scoreText.setText("0:0" + score);
+        } else {
+            this.scoreText.setText(Math.floor(score / 60) + ":" + score % 60);
+        }
     }
-
+   
     update() {
+        
         
         //Make player have "right" animation if they are not currently moving 
         //and the "right" animation is not already playing 
@@ -226,11 +244,15 @@ class Play extends Phaser.Scene {
                 //insert code to play animation for character to make it appear hurt (can also just be changing the tint of the sprite.)
                 //decrease hp
                 this.hp.decrease(5);
+                this.sound.play('ghost_die', { volume: 0.3 });
             }
         }
+        //if player die
+        if(this.hp.getHP() <= 0){
+            this.scene.start('deathScene');
+            this.bg_music.pause();
+        }
 
-
-      
     }
-   
+    
 }
