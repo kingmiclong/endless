@@ -4,7 +4,13 @@ class Menu extends Phaser.Scene {
     }
 
     create() {
-
+        this.deathmusic2 = this.sound.add('deathmusic2', {
+            mute: false,
+            volume: 0.2,
+            rate: 1,
+            loop: true 
+        });
+        this.deathmusic2.play();
 
         gamePointer = this.input.activePointer;
         this.title = this.add.image(0, 0, 'title').setOrigin(0);
@@ -12,10 +18,9 @@ class Menu extends Phaser.Scene {
         this.nextButton.setInteractive();
 
         this.nextButton.on('pointerdown', () => {
+            this.deathmusic2.pause();
+            this.sound.play('selectsound');
             this.scene.start('instructionsScene');
         });
-
-        
-
     }
 }
